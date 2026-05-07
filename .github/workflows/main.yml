@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./streams
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 21
@@ -24,6 +27,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    defaults:
+      run:
+        working-directory: ./streams
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 21
@@ -32,7 +38,7 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - name: Build and push Docker
+    - name: Build with Maven
       run: mvn clean install -DskipTests
     - name: Docker login and push
       env:
