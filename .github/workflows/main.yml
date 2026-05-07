@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./streams
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 21
@@ -32,13 +35,18 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - name: Build and push Docker
-      run: mvn clean install -DskipTests
-    - name: Docker login and push
+    - name: Build JAR
+      working-directory: ./streams
+      run: mvn clean package -DskipTests
+    - name: Login to DockerHub
       env:
-        DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKER_PASS: ${{ secrets.DOCKERHUB_TOKEN }}
       run: |
-        echo $DOCKER_TOKEN | docker login -u $DOCKER_USERNAME --password-stdin
-        docker build -t $DOCKER_USERNAME/streams:latest .
-        docker push $DOCKER_USERNAME/streams:latest
+        cd streams
+        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+    - name: Build Docker image
+      working-directory: ./streams
+      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/streams:latest .
+    - name: Push Docker image
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/streams:latest
