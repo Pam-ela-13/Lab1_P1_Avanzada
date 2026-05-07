@@ -14,12 +14,12 @@ import java.util.List;
 @Repository
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
     
-    // Consultas por convención: derivadas automáticamente
+    // Consultas por convencion: derivadas automáticamente
     List<Tarea> findByEstado(Estado estado);
     List<Tarea> findByPrioridad(Integer prioridad);
     List<Tarea> findByTituloContainingIgnoreCase(String titulo);
     
-    // Paginación
+    // Paginacion
     Page<Tarea> findAll(Pageable pageable);
     Page<Tarea> findByEstado(Estado estado, Pageable pageable);
     

@@ -65,25 +65,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> manejarResourceNotFoundException(
             ResourceNotFoundException ex, WebRequest request) {
-        
         Map<String, Object> cuerpo = new HashMap<>();
         cuerpo.put("timestamp", LocalDateTime.now());
         cuerpo.put("status", HttpStatus.NOT_FOUND.value());
         cuerpo.put("error", "Recurso No Encontrado");
         cuerpo.put("mensaje", ex.getMessage());
         cuerpo.put("ruta", request.getDescription(false).replace("uri=", ""));
-
         return new ResponseEntity<>(cuerpo, HttpStatus.NOT_FOUND);
     }
 
-    /**
-     * Maneja excepciones de rutas no encontradas (404)
-     * Retorna: 404 NOT FOUND
-     */
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Map<String, Object>> manejarNoHandlerFoundException(
             NoHandlerFoundException ex, WebRequest request) {
-        
         Map<String, Object> cuerpo = new HashMap<>();
         cuerpo.put("timestamp", LocalDateTime.now());
         cuerpo.put("status", HttpStatus.NOT_FOUND.value());
@@ -91,25 +84,18 @@ public class GlobalExceptionHandler {
         cuerpo.put("mensaje", "El endpoint solicitado no existe: " + ex.getRequestURL());
         cuerpo.put("metodo", ex.getHttpMethod());
         cuerpo.put("ruta", ex.getRequestURL());
-
         return new ResponseEntity<>(cuerpo, HttpStatus.NOT_FOUND);
     }
 
-    /**
-     * Maneja excepciones de argumentos inválidos
-     * Retorna: 400 BAD REQUEST
-     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> manejarIllegalArgumentException(
             IllegalArgumentException ex, WebRequest request) {
-        
         Map<String, Object> cuerpo = new HashMap<>();
         cuerpo.put("timestamp", LocalDateTime.now());
         cuerpo.put("status", HttpStatus.BAD_REQUEST.value());
         cuerpo.put("error", "Argumento Inválido");
         cuerpo.put("mensaje", ex.getMessage());
         cuerpo.put("ruta", request.getDescription(false).replace("uri=", ""));
-
         return new ResponseEntity<>(cuerpo, HttpStatus.BAD_REQUEST);
     }
 
