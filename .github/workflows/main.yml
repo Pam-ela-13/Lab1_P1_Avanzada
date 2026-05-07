@@ -29,14 +29,24 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
     - uses: actions/checkout@v3
-    - name: Build and Deploy Docker
+    - name: Set up JDK 21
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build JAR
+      working-directory: ./streams
+      run: mvn clean package -DskipTests
+    - name: Login to DockerHub
       env:
         DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
         DOCKER_PASS: ${{ secrets.DOCKERHUB_TOKEN }}
       run: |
         cd streams
-        mvn clean package -DskipTests
-        docker login -u $DOCKER_USER -p $DOCKER_PASS
-        docker build -t $DOCKER_USER/streams:latest .
-        docker push $DOCKER_USER/streams:latest
-        docker logout
+        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+    - name: Build Docker image
+      working-directory: ./streams
+      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/streams:latest .
+    - name: Push Docker image
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/streams:latest
